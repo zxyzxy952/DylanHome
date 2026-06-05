@@ -31,7 +31,6 @@
         .modal-box{transition:0.5s ease;}
         .modal-img{transition:0.5s ease;}
 
-        /* 铺满全屏 + 无浪费空间 + 横图创意网格 */
         .gallery-wrap{
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -113,7 +112,6 @@
         </div>
     </section>
 
-    <!-- 精彩瞬间 → 铺满全屏、无浪费、横图、创意 -->
     <section id="gallery" class="mb-16 w-full">
         <h2 class="text-[26px] font-bold text-center mb-10 text-dylan"><i class="fa-solid fa-images mr-2"></i>精彩瞬间</h2>
         <div class="gallery-wrap">
@@ -207,9 +205,9 @@
 </footer>
 
 <script>
-// TG机器人参数（已填好）
-const BOT_TOKEN = '8981207217:AAG9XJwcgfrafa2pgLY98QyO5jsVDupRzxU';
-const CHAT_ID = '6414933817';
+//TG参数【已填死，无需修改】
+const BOT_TOKEN = "8981207217:AAG9XJwcgfrafa2pgLY98QyO5jsVDupRzxU";
+const CHAT_ID = "6414933817";
 
 const banners = ["./images/banner1.jpg","./images/banner2.jpg","./images/banner3.jpg"];
 let idx = 0;
@@ -272,9 +270,9 @@ async function sendMsg(){
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({chat_id:CHAT_ID,text:text})
         })
-        alert("留言发布成功，消息已推送TG！");
+        alert("留言发布成功，已推送至TG！");
     }catch(err){
-        alert("留言保存成功，TG推送失败，请先去TG给机器人发一条消息激活");
+        alert("留言已保存在网页本地；TG推送失败（网络无法访问TG接口）");
     }
 }
 window.onload=renderMsg;
