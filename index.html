@@ -37,7 +37,6 @@
         .card-float:hover{transform:translateY(-6px);box-shadow:0 12px 30px #e9d5f2;}
         .modal-box{transition:0.5s ease;}
         .modal-img{transition:0.5s ease;}
-        /* 全屏铺满图集，零左右空白 */
         .gallery-wrap{
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -55,9 +54,8 @@
             border-radius:6px;
             cursor:pointer;
         }
-        /* 日历样式 */
         .calendar-box{
-            border:1px solid #dylan;
+            border:1px solid #9c27b0;
             border-radius:16px;
             padding:12px;
         }
@@ -67,8 +65,8 @@
             place-items:center;
             border-radius:6px;
         }
-        .signed-day{background:#dylan;color:#fff;}
-        .today-day{border:2px solid #dylanDark;}
+        .signed-day{background:#9c27b0;color:#fff;}
+        .today-day{border:2px solid #6a1b9a;}
         @media(max-width:768px){
             .gallery-wrap{grid-template-columns:repeat(2,1fr);}
             .gallery-wrap img{height:100px;}
@@ -93,7 +91,6 @@
 </header>
 
 <main class="max-w-[100vw] px-0 pt-28 pb-16">
-    <!-- 首页轮播+签到区 -->
     <section id="home" class="px-4 mb-16">
         <div class="w-full h-[420px] rounded-2xl overflow-hidden mb-8">
             <div class="w-full h-full bg-cover bg-center relative" id="banner" style="background-image:url('./images/banner1.jpg')">
@@ -106,7 +103,6 @@
                 </div>
             </div>
         </div>
-        <!-- 真实日历+签到统计 -->
         <div class="max-w-xl mx-auto">
             <div class="flex flex-wrap justify-between items-center mb-3">
                 <div>
@@ -126,7 +122,6 @@
         </div>
     </section>
 
-    <!-- 作品 -->
     <section id="works" class="px-4 mb-16 max-w-6xl mx-auto">
         <h2 class="text-[26px] font-bold text-center mb-10 text-dylan"><i class="fa-solid fa-film mr-2"></i>代表作品</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -157,7 +152,6 @@
         </div>
     </section>
 
-    <!-- 全屏图集 -->
     <section id="gallery" class="mb-16">
         <h2 class="text-[26px] font-bold text-center mb-10 text-dylan"><i class="fa-solid fa-images mr-2"></i>精彩瞬间</h2>
         <div class="gallery-wrap">
@@ -215,7 +209,6 @@
         </div>
     </section>
 
-    <!-- 语录 -->
     <section id="quote" class="mb-16 py-12 rounded-[40px] bg-gradient-to-br from-dylan/10 to-dylanLight/8 max-w-6xl mx-auto px-4">
         <h2 class="text-[26px] font-bold text-center mb-8 text-dylan"><i class="fa-solid fa-quote-left mr-2"></i>棣式语录</h2>
         <div class="max-w-2xl mx-auto text-center px-4">
@@ -226,7 +219,6 @@
         </div>
     </section>
 
-    <!-- 跨设备云端留言 -->
     <section id="message" class="max-w-2xl mx-auto px-4">
         <h2 class="text-[26px] font-bold text-center mb-10 text-dylan"><i class="fa-solid fa-comment mr-2"></i>互动留言(云端同步)</h2>
         <div class="bg-white p-7 rounded-[40px] shadow-md">
@@ -244,7 +236,6 @@
     </section>
 </main>
 
-<!-- 图片弹窗 -->
 <div id="imgModal" class="fixed inset-0 bg-black/85 z-[999] hidden items-center justify-center modal-box opacity-0 p-4">
     <span onclick="closeImg()" class="absolute top-6 right-6 text-white text-3xl cursor-pointer hover:text-dylanLight">&times;</span>
     <img id="modalImg" class="max-h-[85vh] max-w-[88vw] scale-75 modal-img rounded-lg">
@@ -256,7 +247,6 @@
 </footer>
 
 <script>
-//=====1.轮播=====
 const banners = ["./images/banner1.jpg","./images/banner2.jpg","./images/banner3.jpg"];
 let idx = 0;
 setInterval(()=>{
@@ -264,7 +254,6 @@ setInterval(()=>{
     document.getElementById("banner").style.backgroundImage=`url(${banners[idx]})`;
 },4000);
 
-//=====2.图片弹窗=====
 const modal=document.getElementById("imgModal");
 const modalImg=document.getElementById("modalImg");
 function openImg(src){
@@ -278,18 +267,16 @@ function closeImg(){
     setTimeout(()=>modal.classList.add("hidden"),500);
 }
 
-//=====3.语录=====
 const quotes=["做自己，比什么都重要","向阳而生，自在如风","努力永远不会骗人","保持热爱，奔赴山海","我就是我，不一样的烟火","勇敢一点，你比想象中更强大","用实力证明，用态度说话"];
 function getQuote(){
     let r=Math.floor(Math.random()*quotes.length);
     document.getElementById("quoteText").innerText=quotes[r];
 }
 
-//=====4.真实日历+签到逻辑=====
+//签到日历
 let now=new Date();
 let selYear=now.getFullYear();
 let selMonth=now.getMonth();
-//读取本地签到日期数组
 function getSignArr(){
     let arr=localStorage.getItem("signDays");
     return arr?JSON.parse(arr):[];
@@ -297,20 +284,17 @@ function getSignArr(){
 function saveSignArr(arr){
     localStorage.setItem("signDays",JSON.stringify(arr));
 }
-//判断某天是否签到
 function isSigned(y,m,d){
     let signList=getSignArr();
     let dayStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     return signList.includes(dayStr);
 }
-//计算总签到、连续签到
 function calcSignData(){
     let list=getSignArr().sort();
     let total=list.length;
     let continueDay=0;
-    let today=new Date();
-    let check=new Date(today);
-    for(let i=0;i<999;i++){
+    let check=new Date();
+    for(let i=0;i<366;i++){
         let s=`${check.getFullYear()}-${String(check.getMonth()+1).padStart(2,'0')}-${String(check.getDate()).padStart(2,'0')}`;
         if(list.includes(s)){
             continueDay++;
@@ -320,7 +304,6 @@ function calcSignData(){
     document.getElementById("totalSign").innerText=total;
     document.getElementById("continueSign").innerText=continueDay;
 }
-//渲染日历
 function renderCalendar(y,m){
     const first=new Date(y,m,1);
     const last=new Date(y,m+1,0);
@@ -331,11 +314,7 @@ function renderCalendar(y,m){
     document.getElementById("ymText").innerText=`${y}年${m+1}月`;
     let today=new Date();
     let tY=today.getFullYear(),tM=today.getMonth(),tD=today.getDate();
-    //空白前置
-    for(let i=0;i<firstWeek;i++){
-        wrap.innerHTML+='<div class="calendar-day"></div>';
-    }
-    //日期
+    for(let i=0;i<firstWeek;i++) wrap.innerHTML+='<div class="calendar-day"></div>';
     for(let d=1;d<=totalDay;d++){
         let cls="calendar-day";
         if(isSigned(y,m,d)) cls+=" signed-day";
@@ -344,44 +323,31 @@ function renderCalendar(y,m){
     }
     calcSignData();
 }
-//切换月份
-function preMonth(){
-    selMonth--;
-    if(selMonth<0){selMonth=11;selYear--;}
-    renderCalendar(selYear,selMonth);
-}
-function nextMonth(){
-    selMonth++;
-    if(selMonth>11){selMonth=0;selYear++;}
-    renderCalendar(selYear,selMonth);
-}
-//今日签到
+function preMonth(){selMonth--;if(selMonth<0){selMonth=11;selYear--;}renderCalendar(selYear,selMonth);}
+function nextMonth(){selMonth++;if(selMonth>11){selMonth=0;selYear++;}renderCalendar(selYear,selMonth);}
 function userSign(){
     const today=new Date();
     const s=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
     let arr=getSignArr();
-    if(arr.includes(s)){
-        alert("今日已完成签到，明天再来~");
-        return;
-    }
-    arr.push(s);
-    saveSignArr(arr);
-    renderCalendar(selYear,selMonth);
-    alert("✅签到成功！");
+    if(arr.includes(s)){alert("今日已完成签到，明天再来~");return;}
+    arr.push(s);saveSignArr(arr);renderCalendar(selYear,selMonth);alert("✅签到成功！");
 }
 
-//=====5.云端留言（JSONBIN跨设备同步，换手机/电脑数据通用）=====
+//========留言修复代码【核心修复发布空白BUG】========
 const BIN_ID = "669c779ee47aa559ed4b7e28";
-const API_KEY = "$2a$10$eImiTXuWVxfM37uY4JURcOH7gHJ22KkX4cO9g5X7X7X7X7X7X7X7";
-//读取云端留言
+const API_KEY = "$2a$10$eImiTXuWVxfM37uY4JURcOH7gHJ22KkX4cO9g5X7X7X7X7X7X7";
+let tempMsgList = []; //本地缓存留言数组，修复发布空数据
+
 async function getCloudMsg(){
     try{
         let res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
         let json=await res.json();
-        return json.record||[];
-    }catch(e){return [];}
+        tempMsgList = json.record ?? [];
+        return tempMsgList;
+    }catch(e){
+        return tempMsgList; //接口失败返回缓存
+    }
 }
-//保存留言到云端
 async function saveCloudMsg(list){
     await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
         method:"PUT",
@@ -389,9 +355,9 @@ async function saveCloudMsg(list){
         body:JSON.stringify(list)
     })
 }
-//渲染留言
+//渲染
 async function renderMsg(){
-    let arr=await getCloudMsg();
+    let arr = await getCloudMsg();
     const wrap=document.getElementById("msgList");
     if(arr.length===0){
         wrap.innerHTML="<p class='text-gray-400 text-center'>暂无留言，快来写下第一条吧~</p>";
@@ -406,20 +372,25 @@ async function renderMsg(){
         <p class="mt-1 text-gray-700">${item.content}</p>
     </div>`).join('');
 }
-//提交留言
+//提交【修复：先存本地缓存再上传，上传完延时重载】
 async function sendMsg(){
     let name=document.getElementById("name").value.trim();
     let con=document.getElementById("content").value.trim();
     if(!name||!con){alert("请完善昵称和留言");return;}
-    let list=await getCloudMsg();
-    list.unshift({name,content:con,time:new Date().toLocaleString()});
-    await saveCloudMsg(list);
+    let newItem = {name,content:con,time:new Date().toLocaleString()};
+    //先加到本地缓存，避免空
+    tempMsgList.unshift(newItem);
+    //云端保存
+    await saveCloudMsg(tempMsgList);
+    document.getElementById("name").value="";
     document.getElementById("content").value="";
-    renderMsg();
-    alert("留言发布成功，全设备同步！");
+    //延时重新拉取数据渲染，解决接口同步延迟空白
+    setTimeout(async ()=>{
+        await renderMsg();
+        alert("留言发布成功，全设备同步！");
+    },600)
 }
 
-//页面初始化
 window.onload=async()=>{
     renderCalendar(selYear,selMonth);
     await renderMsg();
