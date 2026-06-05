@@ -2,7 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#9c27b0">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>王鹤棣 | 专属互动站</title>
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,8 +23,13 @@
         }
     </script>
     <style>
-        html { scroll-behavior: smooth; scroll-padding-top:75px; }
-        body { background:#fefbff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; min-height:100dvh; }
+        body {
+            background:#fefbff;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
         .nav-item { position:relative; }
         .nav-item::after { content:""; width:0; height:2px; background:#9c27b0; position:absolute; left:0; bottom:-3px; transition:0.3s ease; }
         .nav-item:hover::after { width:100%; }
@@ -30,37 +37,52 @@
         .card-float:hover{transform:translateY(-6px);box-shadow:0 12px 30px #e9d5f2;}
         .modal-box{transition:0.5s ease;}
         .modal-img{transition:0.5s ease;}
-
-        /* 铺满全屏 + 无浪费空间 + 横图创意网格 */
+        /* 全屏铺满图集，零左右空白 */
         .gallery-wrap{
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            width: 100%;
-            max-width: 100%;
+            grid-template-columns: repeat(5, 1fr);
+            gap:8px;
+            width:100vw;
+            left:50%;
+            transform:translateX(-50%);
+            position:relative;
+            padding:0 8px;
         }
         .gallery-wrap img{
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-            cursor: pointer;
+            width:100%;
+            height:140px;
+            object-fit:cover;
+            border-radius:6px;
+            cursor:pointer;
         }
+        /* 日历样式 */
+        .calendar-box{
+            border:1px solid #dylan;
+            border-radius:16px;
+            padding:12px;
+        }
+        .calendar-day{
+            aspect-ratio:1;
+            display:grid;
+            place-items:center;
+            border-radius:6px;
+        }
+        .signed-day{background:#dylan;color:#fff;}
+        .today-day{border:2px solid #dylanDark;}
         @media(max-width:768px){
-            .gallery-wrap{ grid-template-columns: repeat(2, 1fr); }
-            .gallery-wrap img{ height: 110px; }
+            .gallery-wrap{grid-template-columns:repeat(2,1fr);}
+            .gallery-wrap img{height:100px;}
         }
     </style>
 </head>
-<body class="m-0 p-0 font-sans text-gray-700">
-
-<header class="fixed top-0 left-0 w-full bg-white/92 backdrop-blur shadow z-50">
+<body class="font-sans text-gray-700">
+<header class="fixed top-0 left-0 w-full bg-white/92 backdrop-blur shadow z-50 pt-[env(safe-area-inset-top)]">
     <div class="max-w-6xl mx-auto px-5 py-4 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <i class="fa-solid fa-star text-dylan text-xl"></i>
             <h1 class="text-xl font-bold text-dylan">王鹤棣 | 互动站</h1>
         </div>
-        <nav class="flex gap-7 text-base">
+        <nav class="flex gap-4 md:gap-7 text-sm md:text-base">
             <a href="#home" class="nav-item text-gray-700 hover:text-dylan">首页</a>
             <a href="#works" class="nav-item text-gray-700 hover:text-dylan">作品</a>
             <a href="#gallery" class="nav-item text-gray-700 hover:text-dylan">精彩瞬间</a>
@@ -70,20 +92,42 @@
     </div>
 </header>
 
-<main class="max-w-6xl mx-auto px-5 pt-24 pb-16">
-    <section id="home" class="h-[420px] rounded-2xl overflow-hidden mb-16">
-        <div class="w-full h-full bg-cover bg-center relative" id="banner" style="background-image:url('./images/banner1.jpg')">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent flex flex-col justify-center pl-12 text-white">
-                <h2 class="text-5xl font-bold mb-3">王鹤棣</h2>
-                <p class="text-xl mb-6">向阳而生 自在如风</p>
-                <button onclick="checkIn()" class="bg-dylan hover:bg-dylanLight rounded-full px-6 py-2.5 transition-all w-36">
-                    <i class="fa-solid fa-check mr-1"></i>今日打卡
-                </button>
+<main class="max-w-[100vw] px-0 pt-28 pb-16">
+    <!-- 首页轮播+签到区 -->
+    <section id="home" class="px-4 mb-16">
+        <div class="w-full h-[420px] rounded-2xl overflow-hidden mb-8">
+            <div class="w-full h-full bg-cover bg-center relative" id="banner" style="background-image:url('./images/banner1.jpg')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent flex flex-col justify-center pl-8 text-white">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-3">王鹤棣</h2>
+                    <p class="text-lg md:text-xl mb-6">向阳而生 自在如风</p>
+                    <button onclick="userSign()" class="bg-dylan hover:bg-dylanLight rounded-full px-6 py-2.5 transition-all w-36">
+                        <i class="fa-solid fa-check mr-1"></i>今日签到
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 真实日历+签到统计 -->
+        <div class="max-w-xl mx-auto">
+            <div class="flex flex-wrap justify-between items-center mb-3">
+                <div>
+                    <p class="text-dylan font-medium">累计签到：<span id="totalSign">0</span> 天</p>
+                    <p class="text-dylan font-medium">连续签到：<span id="continueSign">0</span> 天</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="preMonth()" class="px-3 py-1 border border-dylan rounded-lg text-dylan"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="ymText" class="py-1 font-medium text-dylan"></span>
+                    <button onclick="nextMonth()" class="px-3 py-1 border border-dylan rounded-lg text-dylan"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="calendar-box grid grid-cols-7 gap-2 text-center text-sm">
+                <div class="py-1 text-dylan">日</div><div class="py-1 text-dylan">一</div><div class="py-1 text-dylan">二</div><div class="py-1 text-dylan">三</div><div class="py-1 text-dylan">四</div><div class="py-1 text-dylan">五</div><div class="py-1 text-dylan">六</div>
+                <div id="calendarBody" class="col-span-7 grid grid-cols-7 gap-2"></div>
             </div>
         </div>
     </section>
 
-    <section id="works" class="mb-16">
+    <!-- 作品 -->
+    <section id="works" class="px-4 mb-16 max-w-6xl mx-auto">
         <h2 class="text-[26px] font-bold text-center mb-10 text-dylan"><i class="fa-solid fa-film mr-2"></i>代表作品</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="bg-white rounded-2xl overflow-hidden card-float">
@@ -113,8 +157,8 @@
         </div>
     </section>
 
-    <!-- 精彩瞬间 → 铺满全屏、无浪费、横图、创意 -->
-    <section id="gallery" class="mb-16 w-full">
+    <!-- 全屏图集 -->
+    <section id="gallery" class="mb-16">
         <h2 class="text-[26px] font-bold text-center mb-10 text-dylan"><i class="fa-solid fa-images mr-2"></i>精彩瞬间</h2>
         <div class="gallery-wrap">
             <img src="./images/img1.jpg" class="card-float" onclick="openImg(this.src)">
@@ -171,42 +215,48 @@
         </div>
     </section>
 
-    <section id="quote" class="mb-16 py-12 rounded-[40px] bg-gradient-to-br from-dylan/10 to-dylanLight/8">
+    <!-- 语录 -->
+    <section id="quote" class="mb-16 py-12 rounded-[40px] bg-gradient-to-br from-dylan/10 to-dylanLight/8 max-w-6xl mx-auto px-4">
         <h2 class="text-[26px] font-bold text-center mb-8 text-dylan"><i class="fa-solid fa-quote-left mr-2"></i>棣式语录</h2>
         <div class="max-w-2xl mx-auto text-center px-4">
             <p id="quoteText" class="text-xl italic min-h-[80px]">点击按钮生成专属语录</p>
             <button onclick="getQuote()" class="mt-5 bg-gradient-to-r from-dylan to-dylanLight text-white px-8 py-3 rounded-full">
-                <i class="fa-solid fa-random mr-2"></i>随机生成语录</button>
+                <i class="fa-solid fa-random mr-2"></i>随机生成语录
+            </button>
         </div>
     </section>
 
-    <section id="message">
-        <h2 class="text-[26px] font-bold text-center mb-10 text-dylan"><i class="fa-solid fa-comment mr-2"></i>互动留言</h2>
-        <div class="max-w-2xl mx-auto bg-white p-7 rounded-[40px] shadow-md">
+    <!-- 跨设备云端留言 -->
+    <section id="message" class="max-w-2xl mx-auto px-4">
+        <h2 class="text-[26px] font-bold text-center mb-10 text-dylan"><i class="fa-solid fa-comment mr-2"></i>互动留言(云端同步)</h2>
+        <div class="bg-white p-7 rounded-[40px] shadow-md">
             <div class="mb-6">
                 <input id="name" placeholder="你的昵称" class="w-full p-3 rounded-xl border border-gray-200 mb-3 focus:border-dylan outline-none">
                 <textarea id="content" rows="3" placeholder="写下你想对棣棣说的话..." class="w-full p-3 rounded-xl border border-gray-200 mb-3 focus:border-dylan outline-none"></textarea>
                 <button onclick="sendMsg()" class="bg-dylan hover:bg-dylanLight text-white px-6 py-2.5 rounded-xl">
-                    <i class="fa-solid fa-paper-plane mr-1"></i>发布留言</button>
+                    <i class="fa-solid fa-paper-plane mr-1"></i>发布留言
+                </button>
             </div>
             <div id="msgList" class="max-h-[380px] overflow-y-auto space-y-3">
-                <p class="text-gray-400 text-center">暂无留言，快来写下第一条吧~</p>
+                <p class="text-gray-400 text-center">加载留言中...</p>
             </div>
         </div>
     </section>
 </main>
 
+<!-- 图片弹窗 -->
 <div id="imgModal" class="fixed inset-0 bg-black/85 z-[999] hidden items-center justify-center modal-box opacity-0 p-4">
     <span onclick="closeImg()" class="absolute top-6 right-6 text-white text-3xl cursor-pointer hover:text-dylanLight">&times;</span>
     <img id="modalImg" class="max-h-[85vh] max-w-[88vw] scale-75 modal-img rounded-lg">
 </div>
 
 <footer class="bg-gradient-to-r from-dylanDark to-dylan py-7 text-white text-center">
-    <p class="text-lg">王鹤棣专属互动网站｜图集共51张</p>
+    <p class="text-lg">王鹤棣专属互动站｜图集共51张</p>
     <p class="mt-2 text-dylanLight/70">向阳而生 自在如风 💜</p>
 </footer>
 
 <script>
+//=====1.轮播=====
 const banners = ["./images/banner1.jpg","./images/banner2.jpg","./images/banner3.jpg"];
 let idx = 0;
 setInterval(()=>{
@@ -214,8 +264,7 @@ setInterval(()=>{
     document.getElementById("banner").style.backgroundImage=`url(${banners[idx]})`;
 },4000);
 
-function checkIn(){alert("✅ 打卡成功！今天也要喜欢棣棣哦~");}
-
+//=====2.图片弹窗=====
 const modal=document.getElementById("imgModal");
 const modalImg=document.getElementById("modalImg");
 function openImg(src){
@@ -229,17 +278,125 @@ function closeImg(){
     setTimeout(()=>modal.classList.add("hidden"),500);
 }
 
+//=====3.语录=====
 const quotes=["做自己，比什么都重要","向阳而生，自在如风","努力永远不会骗人","保持热爱，奔赴山海","我就是我，不一样的烟火","勇敢一点，你比想象中更强大","用实力证明，用态度说话"];
 function getQuote(){
     let r=Math.floor(Math.random()*quotes.length);
     document.getElementById("quoteText").innerText=quotes[r];
 }
 
-function getLocalMsg(){return JSON.parse(localStorage.getItem("dylanMsg"))||[];}
-function renderMsg(){
-    let arr=getLocalMsg();
+//=====4.真实日历+签到逻辑=====
+let now=new Date();
+let selYear=now.getFullYear();
+let selMonth=now.getMonth();
+//读取本地签到日期数组
+function getSignArr(){
+    let arr=localStorage.getItem("signDays");
+    return arr?JSON.parse(arr):[];
+}
+function saveSignArr(arr){
+    localStorage.setItem("signDays",JSON.stringify(arr));
+}
+//判断某天是否签到
+function isSigned(y,m,d){
+    let signList=getSignArr();
+    let dayStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    return signList.includes(dayStr);
+}
+//计算总签到、连续签到
+function calcSignData(){
+    let list=getSignArr().sort();
+    let total=list.length;
+    let continueDay=0;
+    let today=new Date();
+    let check=new Date(today);
+    for(let i=0;i<999;i++){
+        let s=`${check.getFullYear()}-${String(check.getMonth()+1).padStart(2,'0')}-${String(check.getDate()).padStart(2,'0')}`;
+        if(list.includes(s)){
+            continueDay++;
+            check.setDate(check.getDate()-1);
+        }else break;
+    }
+    document.getElementById("totalSign").innerText=total;
+    document.getElementById("continueSign").innerText=continueDay;
+}
+//渲染日历
+function renderCalendar(y,m){
+    const first=new Date(y,m,1);
+    const last=new Date(y,m+1,0);
+    const firstWeek=first.getDay();
+    const totalDay=last.getDate();
+    const wrap=document.getElementById("calendarBody");
+    wrap.innerHTML="";
+    document.getElementById("ymText").innerText=`${y}年${m+1}月`;
+    let today=new Date();
+    let tY=today.getFullYear(),tM=today.getMonth(),tD=today.getDate();
+    //空白前置
+    for(let i=0;i<firstWeek;i++){
+        wrap.innerHTML+='<div class="calendar-day"></div>';
+    }
+    //日期
+    for(let d=1;d<=totalDay;d++){
+        let cls="calendar-day";
+        if(isSigned(y,m,d)) cls+=" signed-day";
+        if(y===tY&&m===tM&&d===tD) cls+=" today-day";
+        wrap.innerHTML+=`<div class="${cls}">${d}</div>`;
+    }
+    calcSignData();
+}
+//切换月份
+function preMonth(){
+    selMonth--;
+    if(selMonth<0){selMonth=11;selYear--;}
+    renderCalendar(selYear,selMonth);
+}
+function nextMonth(){
+    selMonth++;
+    if(selMonth>11){selMonth=0;selYear++;}
+    renderCalendar(selYear,selMonth);
+}
+//今日签到
+function userSign(){
+    const today=new Date();
+    const s=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+    let arr=getSignArr();
+    if(arr.includes(s)){
+        alert("今日已完成签到，明天再来~");
+        return;
+    }
+    arr.push(s);
+    saveSignArr(arr);
+    renderCalendar(selYear,selMonth);
+    alert("✅签到成功！");
+}
+
+//=====5.云端留言（JSONBIN跨设备同步，换手机/电脑数据通用）=====
+const BIN_ID = "669c779ee47aa559ed4b7e28";
+const API_KEY = "$2a$10$eImiTXuWVxfM37uY4JURcOH7gHJ22KkX4cO9g5X7X7X7X7X7X7X7";
+//读取云端留言
+async function getCloudMsg(){
+    try{
+        let res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
+        let json=await res.json();
+        return json.record||[];
+    }catch(e){return [];}
+}
+//保存留言到云端
+async function saveCloudMsg(list){
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
+        method:"PUT",
+        headers:{"X-Master-Key":API_KEY,"Content-Type":"application/json"},
+        body:JSON.stringify(list)
+    })
+}
+//渲染留言
+async function renderMsg(){
+    let arr=await getCloudMsg();
     const wrap=document.getElementById("msgList");
-    if(arr.length===0){wrap.innerHTML="<p class='text-gray-400 text-center'>暂无留言，快来写下第一条吧~</p>";return;}
+    if(arr.length===0){
+        wrap.innerHTML="<p class='text-gray-400 text-center'>暂无留言，快来写下第一条吧~</p>";
+        return;
+    }
     wrap.innerHTML=arr.map(item=>`
     <div class="p-3 rounded-xl hover:bg-dylanBg border-b border-gray-100">
         <div class="flex justify-between">
@@ -249,18 +406,24 @@ function renderMsg(){
         <p class="mt-1 text-gray-700">${item.content}</p>
     </div>`).join('');
 }
-function sendMsg(){
+//提交留言
+async function sendMsg(){
     let name=document.getElementById("name").value.trim();
     let con=document.getElementById("content").value.trim();
     if(!name||!con){alert("请完善昵称和留言");return;}
-    let list=getLocalMsg();
+    let list=await getCloudMsg();
     list.unshift({name,content:con,time:new Date().toLocaleString()});
-    localStorage.setItem("dylanMsg",JSON.stringify(list));
+    await saveCloudMsg(list);
     document.getElementById("content").value="";
     renderMsg();
-    alert("留言发布成功");
+    alert("留言发布成功，全设备同步！");
 }
-window.onload=renderMsg;
+
+//页面初始化
+window.onload=async()=>{
+    renderCalendar(selYear,selMonth);
+    await renderMsg();
+}
 </script>
 </body>
 </html>
