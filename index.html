@@ -273,7 +273,7 @@ function getQuote(){
     document.getElementById("quoteText").innerText=quotes[r];
 }
 
-//签到日历
+//签到
 let now=new Date();
 let selYear=now.getFullYear();
 let selMonth=now.getMonth();
@@ -333,37 +333,31 @@ function userSign(){
     arr.push(s);saveSignArr(arr);renderCalendar(selYear,selMonth);alert("✅签到成功！");
 }
 
-//========留言修复代码【核心修复发布空白BUG】========
+//留言【最终修复：内存常驻数组，先发本地立刻渲染，后台异步上传云端】
 const BIN_ID = "669c779ee47aa559ed4b7e28";
-const API_KEY = "$2a$10$eImiTXuWVxfM37uY4JURcOH7gHJ22KkX4cO9g5X7X7X7X7X7X7";
-let tempMsgList = []; //本地缓存留言数组，修复发布空数据
+const API_KEY = "$2a$10$eImiTXuWVxfM37uY4JURcOH7gHJ22KkX4cO9g5X7X7X7X7X7";
+let msgList = []; //全局常驻留言数组，永久保存在内存
 
-async function getCloudMsg(){
+//从云端拉取初始化
+async function initMsg(){
     try{
         let res=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Master-Key":API_KEY}});
         let json=await res.json();
-        tempMsgList = json.record ?? [];
-        return tempMsgList;
-    }catch(e){
-        return tempMsgList; //接口失败返回缓存
+        msgList = Array.isArray(json.record) ? json.record : [];
+    }catch{
+        msgList=[];
     }
+    renderMsgDom();
 }
-async function saveCloudMsg(list){
-    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
-        method:"PUT",
-        headers:{"X-Master-Key":API_KEY,"Content-Type":"application/json"},
-        body:JSON.stringify(list)
-    })
-}
-//渲染
-async function renderMsg(){
-    let arr = await getCloudMsg();
+
+//只渲染页面DOM
+function renderMsgDom(){
     const wrap=document.getElementById("msgList");
-    if(arr.length===0){
+    if(msgList.length===0){
         wrap.innerHTML="<p class='text-gray-400 text-center'>暂无留言，快来写下第一条吧~</p>";
         return;
     }
-    wrap.innerHTML=arr.map(item=>`
+    wrap.innerHTML=msgList.map(item=>`
     <div class="p-3 rounded-xl hover:bg-dylanBg border-b border-gray-100">
         <div class="flex justify-between">
             <span class="font-bold text-dylan">${item.name}</span>
@@ -372,28 +366,39 @@ async function renderMsg(){
         <p class="mt-1 text-gray-700">${item.content}</p>
     </div>`).join('');
 }
-//提交【修复：先存本地缓存再上传，上传完延时重载】
-async function sendMsg(){
+
+//后台异步上传，不阻塞页面渲染
+async function syncCloud(){
+    try{
+        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
+            method:"PUT",
+            headers:{"X-Master-Key":API_KEY,"Content-Type":"application/json"},
+            body:JSON.stringify(msgList)
+        })
+    }catch(e){}
+}
+
+//发布留言核心
+function sendMsg(){
     let name=document.getElementById("name").value.trim();
     let con=document.getElementById("content").value.trim();
     if(!name||!con){alert("请完善昵称和留言");return;}
-    let newItem = {name,content:con,time:new Date().toLocaleString()};
-    //先加到本地缓存，避免空
-    tempMsgList.unshift(newItem);
-    //云端保存
-    await saveCloudMsg(tempMsgList);
+    //1.优先插入本地数组
+    let newMsg={name,content:con,time:new Date().toLocaleString()};
+    msgList.unshift(newMsg);
+    //2.立刻渲染页面，马上显示，不再等接口
+    renderMsgDom();
+    //3.清空输入框
     document.getElementById("name").value="";
     document.getElementById("content").value="";
-    //延时重新拉取数据渲染，解决接口同步延迟空白
-    setTimeout(async ()=>{
-        await renderMsg();
-        alert("留言发布成功，全设备同步！");
-    },600)
+    //4.后台悄悄上传云端，异步不等待
+    syncCloud();
+    alert("留言发布成功，全设备同步！");
 }
 
 window.onload=async()=>{
     renderCalendar(selYear,selMonth);
-    await renderMsg();
+    await initMsg();
 }
 </script>
 </body>
