@@ -48,10 +48,11 @@
             position:relative;
             padding:0 8px;
         }
-        /* ✅ 修改：图片按原始比例显示，不拉伸、不裁剪 */
+        /* ========== 已修改：固定 3:2 比例 ========== */
         .gallery-wrap img{
             width:100%;
-            height:auto; /* 核心：自动高度，保持原图比例 */
+            aspect-ratio: 3 / 2; /* 强制3:2宽高比 */
+            object-fit: cover;    /* 居中裁剪，保证不变形 */
             border-radius:6px;
             cursor:pointer;
             display:block;
@@ -72,8 +73,11 @@
         .today-day{border:2px solid #dylanDark;}
         @media(max-width:768px){
             .gallery-wrap{grid-template-columns:repeat(2,1fr);}
-            /* ✅ 移动端也保持原始比例 */
-            .gallery-wrap img{height:auto;}
+            /* 移动端同样保持3:2比例 */
+            .gallery-wrap img{
+                aspect-ratio: 3 / 2;
+                object-fit: cover;
+            }
         }
     </style>
 </head>
